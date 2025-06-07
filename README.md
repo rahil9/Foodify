@@ -1,54 +1,55 @@
-# Food Delivery System
+# Food Delivery Application
 
-This repository contains multiple food delivery related projects:
+## Overview
 
-## Projects
+The Food Delivery Application is a microservices-based system designed to facilitate seamless interactions between users, restaurants, and delivery personnel. Built using Java and Spring Boot, the application ensures scalability, maintainability, and efficient service management.
 
-### 1. Foodify Harmony
+## Microservices Architecture
 
-A modern web application built with:
+The application comprises the following microservices:
 
-- TypeScript
-- Vite
-- Tailwind CSS
-- React
+- **API Gateway**: Serves as the single entry point for all client requests, routing them to the appropriate services and handling cross-cutting concerns such as authentication and logging.
 
-### 2. Microservices Architecture
+- **Auth Service**: Manages user authentication and authorization, issuing JWT tokens upon successful login.
 
-A comprehensive microservices-based food delivery system with the following services:
+- **User Service**: Handles user registration, profile management, and role assignments.
 
-- API Gateway
-- Auth Service
-- User Service
-- Restaurant Service
-- Order Service
-- Payment Service
-- Eureka Server (Service Discovery)
+- **Restaurant Service**: Manages restaurant information, including menus, locations, and operating hours.
+
+- **Order Service**: Oversees the creation, updating, and tracking of food orders.
+
+- **Payment Service**: Integrates with external payment gateways to process transactions securely.
+
+- **Eureka Server**: Facilitates service discovery, allowing microservices to locate and communicate with each other dynamically.
+
+## Features
+
+- **User Authentication**: Secure login and registration with role-based access control.
+
+- **Restaurant Management**: CRUD operations for restaurant data and menu items.
+
+- **Order Processing**: Seamless order placement, modification, and tracking.
+
+- **Payment Integration**: Secure payment processing through third-party gateways.
+
+- **Service Discovery**: Dynamic discovery of microservices using Eureka Server.
+
+## Technologies Used
+
+- **Backend**: Java, Spring Boot
+
+- **Service Discovery**: Netflix Eureka
+
+- **API Gateway**: Spring Cloud Gateway
+
+- **Security**: Spring Security, JWT
 
 ## Getting Started
 
-Each project has its own README with specific setup instructions. Please refer to the respective project directories for detailed information.
+### Prerequisites
 
-## Project Structure
+- Java 17 or higher
 
-```
-.
-├── foodify-harmony/           # Modern web frontend
-├── microservices/            # Microservices architecture
-│   ├── api-gateway/
-│   ├── auth-service/
-│   ├── user-service/
-│   ├── restaurant-service/
-│   ├── order-service/
-│   ├── payment-service/
-│   └── eureka-server/
-└── README.md
-```
+- Maven
 
-## Contributing
-
-Please read the individual project READMEs for contribution guidelines.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+- Docker (optional, for containerization)
