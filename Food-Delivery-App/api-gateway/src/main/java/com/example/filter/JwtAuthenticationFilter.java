@@ -1,7 +1,6 @@
 package com.example.filter;
 
 import com.example.service.JwtService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,10 +15,13 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter implements WebFilter {
     private final JwtService jwtService;
+
+    public JwtAuthenticationFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -32,7 +34,8 @@ public class JwtAuthenticationFilter implements WebFilter {
             if (jwtService.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails user = jwtService.extractUserDetails(token);
 
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
+                        null, user.getAuthorities());
 
                 SecurityContext context = new SecurityContextImpl(authenticationToken);
 
@@ -40,7 +43,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                         .header("email", user.getUsername())
                         .header("role", user.getAuthorities().stream().findFirst()
-                            .map(GrantedAuthority::getAuthority).orElse(""))
+                                .map(GrantedAuthority::getAuthority).orElse(""))
                         .build();
 
                 // Create a new ServerWebExchange with the modified request
@@ -48,7 +51,8 @@ public class JwtAuthenticationFilter implements WebFilter {
                         .request(modifiedRequest)
                         .build();
 
-                return chain.filter(modifiedExchange).contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
+                return chain.filter(modifiedExchange)
+                        .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
             }
         }
         return chain.filter(exchange);

@@ -9,21 +9,20 @@ import org.springframework.stereotype.Component;
 public class PaymentMapper {
 
     public Payment mapToModel(PaymentRequest request) {
-        return Payment.builder()
-                .orderId(request.getOrderId())
-                .method(request.getMethod())
-                .status(null) // Status will be set during processing
-                .transactionId(null) // Transaction ID will be generated during processing
-                .build();
+        Payment payment = new Payment();
+        payment.setOrderId(request.getOrderId());
+        payment.setMethod(request.getMethod());
+        payment.setStatus(null); // Status will be set during processing
+        payment.setTransactionId(null); // Transaction ID will be generated during processing
+        return payment;
     }
 
     public PaymentResponse mapToDTO(Payment payment) {
-        return PaymentResponse.builder()
-                .id(payment.getId())
-                .orderId(payment.getOrderId())
-                .method(payment.getMethod())
-                .status(payment.getStatus())
-                .transactionId(payment.getTransactionId())
-                .build();
+        return new PaymentResponse(
+                payment.getId(),
+                payment.getOrderId(),
+                payment.getMethod(),
+                payment.getStatus(),
+                payment.getTransactionId());
     }
 }

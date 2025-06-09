@@ -8,7 +8,6 @@ import com.example.dto.*;
 import com.example.exception.CredentialsNotValidException;
 import com.example.service.JwtService;
 import feign.FeignException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,13 +18,19 @@ import org.springframework.web.bind.annotation.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserServiceCommunication communicator;
     private final JwtService jwtService;
+
+    public AuthController(AuthenticationManager authenticationManager, UserServiceCommunication communicator,
+            JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
+        this.communicator = communicator;
+        this.jwtService = jwtService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<DTO<AuthResponse>> authenticateAndGetToken(@RequestBody AuthRequest authRequest)
@@ -43,16 +48,9 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .header("Authorization", "Bearer " + token)
-                    .body(DTO.<AuthResponse>builder()
-                            .success(true)
-                            .message("Logged In Successfully")
-                            .data(AuthResponse.builder()
-                                    .email(email)
-                                    .name(name)
-                                    .role(role)
-                                    .id(id)
-                                    .build())
-                            .build());
+                    .body(new DTO<>(true,
+                            "Logged In Successfully",
+                            new AuthResponse(id, name, email, role)));
         } else {
             throw new CredentialsNotValidException("Invalid user request!");
         }
@@ -69,16 +67,12 @@ public class AuthController {
                         userResponse.getData().getRole());
                 return ResponseEntity.ok()
                         .header("Authorization", "Bearer " + token)
-                        .body(DTO.<AuthResponse>builder()
-                                .success(true)
-                                .message("Registered Successfully")
-                                .data(AuthResponse.builder()
-                                        .email(userResponse.getData().getEmail())
-                                        .name(userResponse.getData().getName())
-                                        .role(userResponse.getData().getRole())
-                                        .id(userResponse.getData().getId())
-                                        .build())
-                                .build());
+                        .body(new DTO<>(true,
+                                "Registered Successfully",
+                                new AuthResponse(userResponse.getData().getId(),
+                                        userResponse.getData().getName(),
+                                        userResponse.getData().getEmail(),
+                                        userResponse.getData().getRole())));
             } else {
                 return ResponseEntity.badRequest().body(null);
             }

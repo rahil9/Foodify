@@ -7,32 +7,37 @@ import com.example.entity.Restaurant;
 import com.example.mapper.MenuItemMapper;
 import com.example.repository.MenuItemRepository;
 import com.example.repository.RestaurantRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class MenuItemServiceImpl implements MenuItemService {
     private final MenuItemRepository menuItemRepository;
     private final MenuItemMapper menuItemMapper;
     private final RestaurantRepository restaurantRepository;
 
+    public MenuItemServiceImpl(MenuItemRepository menuItemRepository, MenuItemMapper menuItemMapper,
+            RestaurantRepository restaurantRepository) {
+        this.menuItemRepository = menuItemRepository;
+        this.menuItemMapper = menuItemMapper;
+        this.restaurantRepository = restaurantRepository;
+    }
+
     @Override
     public MenuItemResponse createMenuItem(MenuItemRequest request) {
         Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
-        MenuItem menuItem = menuItemMapper.mapToModel(request, restaurant);
-        return menuItemMapper.mapToDTO(menuItemRepository.save(menuItem));
+        MenuItem menuItem = menuItemMapper.toMenuItem(request, restaurant);
+        return menuItemMapper.toMenuItemResponse(menuItemRepository.save(menuItem));
     }
 
     @Override
     public List<MenuItemResponse> getMenuItemsByCategory(String category) {
         return menuItemRepository.findByCategory(category)
                 .stream()
-                .map(menuItemMapper::mapToDTO)
+                .map(menuItemMapper::toMenuItemResponse)
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +45,7 @@ public class MenuItemServiceImpl implements MenuItemService {
     public List<MenuItemResponse> getMenuItemsByRestaurant(Long restaurantId) {
         return menuItemRepository.findByRestaurantId(restaurantId)
                 .stream()
-                .map(menuItemMapper::mapToDTO)
+                .map(menuItemMapper::toMenuItemResponse)
                 .collect(Collectors.toList());
     }
 
@@ -48,9 +53,8 @@ public class MenuItemServiceImpl implements MenuItemService {
     public MenuItemResponse getMenuItemById(Long id) {
         MenuItem menuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Menu item not found with ID: " + id));
-        return menuItemMapper.mapToDTO(menuItem);
+        return menuItemMapper.toMenuItemResponse(menuItem);
     }
-
 
     @Override
     public MenuItemResponse updateMenuItem(Long id, MenuItemRequest request) {
@@ -64,7 +68,7 @@ public class MenuItemServiceImpl implements MenuItemService {
         menuItem.setVeg(request.isVeg());
         menuItem.setImage(request.getImage());
 
-        return menuItemMapper.mapToDTO(menuItemRepository.save(menuItem));
+        return menuItemMapper.toMenuItemResponse(menuItemRepository.save(menuItem));
     }
 
     @Override

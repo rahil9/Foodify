@@ -8,7 +8,6 @@ import com.example.exception.UserAlreadyExistsException;
 import com.example.exception.UserNotFoundException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +17,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
     @Override
     public UserResponse createUser(UserRequest user) {
         System.out.println("Control here");
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
         return userMapper.mapToDTO(userRepository.save(userMapper.mapToModel(user)));
@@ -35,20 +38,21 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse getUserByEmail(String emailId) {
-        User exisitingUser =  userRepository.findByEmail(emailId)
-                .orElseThrow(()-> new UserNotFoundException("User with Email " + emailId + " not found."));
+        User exisitingUser = userRepository.findByEmail(emailId)
+                .orElseThrow(() -> new UserNotFoundException("User with Email " + emailId + " not found."));
         return userMapper.mapToDTO(exisitingUser);
     }
 
     @Override
     public UserResponse getUserById(int userId) {
-        return userMapper.mapToDTO(userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User with Id " + userId + " not found.")));
+        return userMapper.mapToDTO(userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with Id " + userId + " not found.")));
     }
 
     @Override
     public List<UserResponse> getAllUsers() {
-        List<User> users =  userRepository.findAll();
-        if(users.isEmpty()){
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
             throw new NoUsersFoundException("No Users Found");
         }
         return users.stream().map(userMapper::mapToDTO).collect(Collectors.toList());
@@ -67,7 +71,6 @@ public class UserServiceImpl implements UserService{
         UserResponse userSaved = userMapper.mapToDTO(userRepository.save(existingUser));
         return userSaved;
     }
-
 
     @Override
     public void deleteUserById(int userId) {
@@ -92,6 +95,5 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
         return userMapper.mapToDTO(user);
     }
-
 
 }

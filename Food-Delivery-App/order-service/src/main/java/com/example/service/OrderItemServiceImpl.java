@@ -7,7 +7,6 @@ import com.example.entity.OrderItem;
 import com.example.exception.OrderItemNotFoundException;
 import com.example.mapper.OrderItemMapper;
 import com.example.repository.OrderItemRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,21 +14,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
     private final OrderItemMapper orderItemMapper;
 
+    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, OrderItemMapper orderItemMapper) {
+        this.orderItemRepository = orderItemRepository;
+        this.orderItemMapper = orderItemMapper;
+    }
+
     @Override
     @Transactional
     public List<OrderItem> saveOrderItems(List<OrderItemRequest> orderItemRequests, Order order) {
         List<OrderItem> orderItems = orderItemRequests.stream()
-                .map(request -> OrderItem.builder()
-                        .menuItemId(request.getMenuItemId())
-                        .quantity(request.getQuantity())
-                        .order(order)
-                        .build())
+                .map(request -> {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setMenuItemId(request.getMenuItemId());
+                    orderItem.setQuantity(request.getQuantity());
+                    orderItem.setOrder(order);
+                    return orderItem;
+                })
                 .collect(Collectors.toList());
 
         return orderItemRepository.saveAll(orderItems);
@@ -47,7 +52,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderItemResponse updateOrderItemQuantity(Long orderItemId, int quantity) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new OrderItemNotFoundException("Order item not found with id: " + orderItemId));
-        
+
         orderItem.setQuantity(quantity);
         return orderItemMapper.mapToDTO(orderItemRepository.save(orderItem));
     }

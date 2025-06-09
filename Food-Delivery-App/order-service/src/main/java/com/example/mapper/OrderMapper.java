@@ -11,28 +11,27 @@ import java.util.stream.Collectors;
 @Component
 public class OrderMapper {
 
-    public Order mapToModel(OrderRequest request) {
-        return Order.builder()
-                .userId(request.getUserId())
-                .restaurantId(request.getRestaurantId())
-                .totalPrice(request.getTotalPrice())
-                .orderItems(request.getOrderItems().stream()
-                        .map(new OrderItemMapper()::mapToModel)
-                        .collect(Collectors.toList()))
-                .build();
-    }
+        public Order mapToModel(OrderRequest request) {
+                Order order = new Order();
+                order.setUserId(request.getUserId());
+                order.setRestaurantId(request.getRestaurantId());
+                order.setTotalPrice(request.getTotalPrice());
+                order.setOrderItems(request.getOrderItems().stream()
+                                .map(new OrderItemMapper()::mapToModel)
+                                .collect(Collectors.toList()));
+                return order;
+        }
 
-    public OrderResponse toResponse(Order order) {
-        return OrderResponse.builder()
-                .orderId(order.getId())
-                .userId(order.getUserId())
-                .restaurantId(order.getRestaurantId())
-                .totalPrice(order.getTotalPrice())
-                .status(order.getStatus())
-                .createdAt(order.getCreatedAt())
-                .orderItems(order.getOrderItems().stream()
-                        .map(new OrderItemMapper()::mapToDTO)
-                        .collect(Collectors.toList()))
-                .build();
-    }
+        public OrderResponse toResponse(Order order) {
+                return new OrderResponse(
+                                order.getId(),
+                                order.getUserId(),
+                                order.getRestaurantId(),
+                                order.getTotalPrice(),
+                                order.getStatus(),
+                                order.getCreatedAt(),
+                                order.getOrderItems().stream()
+                                                .map(new OrderItemMapper()::mapToDTO)
+                                                .collect(Collectors.toList()));
+        }
 }

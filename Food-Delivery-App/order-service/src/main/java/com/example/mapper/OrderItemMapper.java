@@ -9,16 +9,15 @@ import org.springframework.stereotype.Component;
 public class OrderItemMapper {
 
     public OrderItem mapToModel(OrderItemRequest request) {
-        return OrderItem.builder()
-                .menuItemId(request.getMenuItemId())
-                .quantity(request.getQuantity())
-                .build();
+        OrderItem orderItem = new OrderItem();
+        orderItem.setMenuItemId(request.getMenuItemId());
+        orderItem.setQuantity(request.getQuantity());
+        return orderItem;
     }
 
     public OrderItemResponse mapToDTO(OrderItem orderItem) {
-        return OrderItemResponse.builder()
-                .menuItemId(orderItem.getMenuItemId())
-                .quantity(orderItem.getQuantity())
-                .build();
+        return new OrderItemResponse(
+                orderItem.getMenuItemId(),
+                orderItem.getQuantity());
     }
 }

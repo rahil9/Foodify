@@ -19,8 +19,6 @@ public class JwtAccessDeniedHandler implements ServerAccessDeniedHandler {
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, AccessDeniedException denied) {
         DTO<String> customResponse = new DTO<>(false, "Only Admins can Access this resource", null);
-
-
         byte[] bytes;
         try {
             bytes = objectMapper.writeValueAsBytes(customResponse);

@@ -3,7 +3,6 @@ package com.example.controller;
 import com.example.dto.RestaurantRequest;
 import com.example.dto.RestaurantResponse;
 import com.example.service.RestaurantService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +10,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/restaurant")
-@RequiredArgsConstructor
 public class RestaurantController {
 
     private final RestaurantService service;
+
+    public RestaurantController(RestaurantService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public RestaurantResponse createRestaurant(@RequestBody RestaurantRequest request) {
@@ -46,6 +48,5 @@ public class RestaurantController {
         service.deleteRestaurant(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

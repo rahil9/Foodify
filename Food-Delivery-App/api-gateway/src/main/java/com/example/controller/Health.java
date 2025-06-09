@@ -13,26 +13,30 @@ public class Health {
     @GetMapping("schedule-service")
     public ResponseEntity<HealthResponse> schedule() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                HealthResponse.builder().status("DOWN").build());
+                new HealthResponse("DOWN"));
     }
+
     @GetMapping("airport-service")
     public ResponseEntity<HealthResponse> airport() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                HealthResponse.builder().status("DOWN").build());
+                new HealthResponse("DOWN"));
     }
+
     @GetMapping("flight-service")
     public ResponseEntity<HealthResponse> flight() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                HealthResponse.builder().status("DOWN").build());
+                new HealthResponse("DOWN"));
     }
+
     @GetMapping("auth-service")
     public ResponseEntity<HealthResponse> auth() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                HealthResponse.builder().status("DOWN").build());
+                new HealthResponse("DOWN"));
     }
+
     @GetMapping("user-service")
     public ResponseEntity<HealthResponse> user() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                HealthResponse.builder().status("DOWN").build());
+                new HealthResponse("DOWN"));
     }
 }

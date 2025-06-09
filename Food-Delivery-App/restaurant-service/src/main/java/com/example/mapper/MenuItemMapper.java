@@ -9,28 +9,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class MenuItemMapper {
 
-    public MenuItem mapToModel(MenuItemRequest request, Restaurant restaurant) {
-        return MenuItem.builder()
-                .name(request.getName())
-                .price(request.getPrice())
-                .description(request.getDescription())
-                .category(request.getCategory())
-                .isVeg(request.isVeg())
-                .image(request.getImage())
-                .restaurant(restaurant)
-                .build();
+    public MenuItem toMenuItem(MenuItemRequest request, Restaurant restaurant) {
+        MenuItem menuItem = new MenuItem();
+        menuItem.setName(request.getName());
+        menuItem.setPrice(request.getPrice());
+        menuItem.setDescription(request.getDescription());
+        menuItem.setCategory(request.getCategory());
+        menuItem.setVeg(request.isVeg());
+        menuItem.setImage(request.getImage());
+        menuItem.setRestaurant(restaurant);
+        return menuItem;
     }
 
-    public MenuItemResponse mapToDTO(MenuItem menuItem) {
-        return MenuItemResponse.builder()
-                .id(menuItem.getId())
-                .name(menuItem.getName())
-                .price(menuItem.getPrice())
-                .description(menuItem.getDescription())
-                .category(menuItem.getCategory())
-                .isVeg(menuItem.isVeg())
-                .image(menuItem.getImage())
-                .restaurantId(menuItem.getRestaurant().getId())
-                .build();
+    public MenuItemResponse toMenuItemResponse(MenuItem menuItem) {
+        return new MenuItemResponse(
+                menuItem.getId(),
+                menuItem.getName(),
+                menuItem.getPrice(),
+                menuItem.getDescription(),
+                menuItem.getCategory(),
+                menuItem.isVeg(),
+                menuItem.getImage(),
+                menuItem.getRestaurant().getId());
     }
 }

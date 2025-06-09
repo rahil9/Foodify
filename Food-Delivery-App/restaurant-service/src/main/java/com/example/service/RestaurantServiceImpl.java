@@ -5,7 +5,6 @@ import com.example.dto.RestaurantResponse;
 import com.example.entity.Restaurant;
 import com.example.mapper.RestaurantMapper;
 import com.example.repository.RestaurantRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,22 +12,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
 
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
 
+    public RestaurantServiceImpl(RestaurantRepository repository, RestaurantMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+
     @Override
     public RestaurantResponse createRestaurant(RestaurantRequest request) {
-        Restaurant restaurant = mapper.mapToModel(request);
-        return mapper.mapToDTO(repository.save(restaurant));
+        Restaurant restaurant = mapper.toRestaurant(request);
+        return mapper.toRestaurantResponse(repository.save(restaurant));
     }
 
     @Override
     public List<RestaurantResponse> getAllRestaurants() {
         return repository.findAll().stream()
-                .map(mapper::mapToDTO)
+                .map(mapper::toRestaurantResponse)
                 .collect(Collectors.toList());
     }
 
@@ -36,7 +39,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResponse getRestaurantById(Long id) {
         Restaurant restaurant = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
-        return mapper.mapToDTO(restaurant);
+        return mapper.toRestaurantResponse(restaurant);
     }
 
     @Override
@@ -49,13 +52,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setName(request.getName());
         restaurant.setRating(request.getRating());
         restaurant.setAddress(request.getAddress());
+        restaurant.setLocation(request.getLocation());
         restaurant.setCategory(request.getCategory());
         restaurant.setDescription(request.getDescription());
         restaurant.setMinOrderAmount(request.getMinOrderAmount());
         restaurant.setDeliveryTime(request.getDeliveryTime());
         restaurant.setImage(request.getImage());
 
-        return mapper.mapToDTO(repository.save(restaurant));
+        return mapper.toRestaurantResponse(repository.save(restaurant));
     }
 
     @Override
@@ -66,4 +70,3 @@ public class RestaurantServiceImpl implements RestaurantService {
         repository.deleteById(id);
     }
 }
-

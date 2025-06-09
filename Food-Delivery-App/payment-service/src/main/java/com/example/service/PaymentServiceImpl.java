@@ -7,7 +7,6 @@ import com.example.enums.PaymentMethod;
 import com.example.enums.PaymentStatus;
 import com.example.mapper.PaymentMapper;
 import com.example.repository.PaymentRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,23 +15,28 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
 
+    public PaymentServiceImpl(PaymentRepository paymentRepository, PaymentMapper paymentMapper) {
+        this.paymentRepository = paymentRepository;
+        this.paymentMapper = paymentMapper;
+    }
+
     @Override
     @Transactional
     public PaymentResponse processPayment(PaymentRequest request) {
-//        Payment payment = paymentMapper.mapToModel(request);
-//        payment.setStatus(PaymentStatus.PENDING);
-//        payment.setTransactionId(generateTransactionId());
-//
-//        // Simulate payment processing
-//        boolean paymentSuccess = processPaymentWithProvider(payment);
-//
-//        payment.setStatus(paymentSuccess ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
-//        return paymentMapper.mapToDTO(paymentRepository.save(payment));
+        // Payment payment = paymentMapper.mapToModel(request);
+        // payment.setStatus(PaymentStatus.PENDING);
+        // payment.setTransactionId(generateTransactionId());
+        //
+        // // Simulate payment processing
+        // boolean paymentSuccess = processPaymentWithProvider(payment);
+        //
+        // payment.setStatus(paymentSuccess ? PaymentStatus.SUCCESS :
+        // PaymentStatus.FAILED);
+        // return paymentMapper.mapToDTO(paymentRepository.save(payment));
 
         List<Payment> existingPayments = paymentRepository.findByOrderId(request.getOrderId());
 
@@ -66,11 +70,11 @@ public class PaymentServiceImpl implements PaymentService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
-        
+
         if (!payment.getTransactionId().equals(transactionId)) {
             throw new RuntimeException("Invalid transaction ID");
         }
-        
+
         payment.setStatus(PaymentStatus.SUCCESS);
         return paymentRepository.save(payment);
     }
@@ -116,11 +120,9 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.save(payment);
     }
 
-
     private String generateTransactionId() {
         return UUID.randomUUID().toString();
     }
-
 
     private boolean processPaymentWithProvider(Payment payment) {
         // Simulate payment processing based on payment method
@@ -156,5 +158,4 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-
-} 
+}
